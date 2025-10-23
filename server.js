@@ -236,7 +236,7 @@ function buildConversationContext(messages) {
 
 // Decision logic: Should we auto-respond?
 async function shouldAutoRespond(message, conversationHistory) {
-  const messageContent = message.content.toLowerCase();
+  const messageContent = (message.body || message.content || '').toLowerCase();
   
   // Keywords that should flag for human
   const escalationKeywords = [
@@ -287,6 +287,8 @@ async function generateAIResponse(message, conversationHistory) {
       ? `\n\nPREVIOUS CONVERSATION:\n${buildConversationContext(conversationHistory)}\n\nCURRENT MESSAGE:`
       : '';
     
+    const messageContent = message.body || message.content;
+    
     const response = await anthropic.messages.create({
       model: 'claude-3-haiku-20240307',
       max_tokens: 1024,
@@ -295,7 +297,7 @@ async function generateAIResponse(message, conversationHistory) {
       messages: [
         {
           role: 'user',
-          content: `${conversationContext}\nCustomer: ${message.content}\n\nProvide a helpful, concise response (1-3 sentences preferred).`
+          content: `${conversationContext}\nCustomer: ${messageContent}\n\nProvide a helpful, concise response (1-3 sentences preferred).`
         }
       ]
     });
@@ -352,23 +354,32 @@ app.post('/webhook/incoming-message', async (req, res) => {
     console.log('\n=== 📩 Incoming Message Webhook ===');
     console.log('Body:', JSON.stringify(req.body, null, 2));
     
-    const { object, data } = req.body;
+    const { object, type, data } = req.body;
     
-    // Verify it's a message event
-    if (object !== 'message' || !data) {
+    // OpenPhone v3 API sends events with nested structure
+    // Handle both old and new formats
+    let messageData;
+    
+    if (object === 'event' && type === 'message.received' && data?.object) {
+      // OpenPhone v3 API format
+      messageData = data.object;
+    } else if (object === 'message' && data) {
+      // Legacy format
+      messageData = data;
+    } else {
       console.log('❌ Not a message event');
       return res.sendStatus(200);
     }
     
     // Only process incoming messages (not our outgoing ones)
-    if (data.direction !== 'incoming') {
+    if (messageData.direction !== 'incoming') {
       console.log('⏩ Skipping outgoing message');
       return res.sendStatus(200);
     }
     
-    const customerPhone = data.from;
-    const messageContent = data.content;
-    const conversationId = data.conversationId;
+    const customerPhone = messageData.from;
+    const messageContent = messageData.body || messageData.content;
+    const conversationId = messageData.conversationId;
     
     console.log(`📱 From: ${customerPhone}`);
     console.log(`💬 Message: ${messageContent}`);
@@ -386,7 +397,7 @@ app.post('/webhook/incoming-message', async (req, res) => {
     console.log(`📚 Found ${conversationHistory.length} previous messages`);
     
     // Decide if we should auto-respond
-    const decision = await shouldAutoRespond(data, conversationHistory);
+    const decision = await shouldAutoRespond(messageData, conversationHistory);
     console.log(`🤔 Decision: ${decision.shouldRespond ? '✅ Auto-respond' : '❌ Flag for human'}`);
     console.log(`📝 Reason: ${decision.reason}`);
     
@@ -398,7 +409,7 @@ app.post('/webhook/incoming-message', async (req, res) => {
     
     // Generate AI response
     console.log('🤖 Generating AI response...');
-    const aiResponse = await generateAIResponse(data, conversationHistory);
+    const aiResponse = await generateAIResponse(messageData, conversationHistory);
     
     if (!aiResponse.success) {
       console.log('❌ AI generation failed, flagging for human');
@@ -417,7 +428,7 @@ app.post('/webhook/incoming-message', async (req, res) => {
     
     // Send response
     console.log('📤 Sending AI response...');
-    const sendResult = await sendSMS(customerPhone, aiResponse.message, data.to);
+    const sendResult = await sendSMS(customerPhone, aiResponse.message, messageData.to);
     
     if (sendResult.success) {
       recordResponse(customerPhone);
