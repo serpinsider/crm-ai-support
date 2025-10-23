@@ -12,7 +12,8 @@ export const TONE_GUIDE = {
     punctuation: "Use :) when being friendly or positive. One emoji max per conversation.",
     grammar: "Casual but correct. ALWAYS use contractions (it's, that's, we'll, you're).",
     tone: "Warm, helpful, like texting a friend",
-    energy: "Genuinely helpful and friendly, not salesy"
+    energy: "Genuinely helpful and friendly, not salesy",
+    formatting: "Add line breaks between separate thoughts/sentences for readability"
   },
   
   // Absolute DON'Ts (corporate/robotic phrases)
