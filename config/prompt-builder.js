@@ -85,10 +85,10 @@ IMPORTANT RULES:
 4. Keep it short and conversational
 5. When they ask follow-up questions, they're talking about the SAME property unless they say otherwise
 
-ABOUT THE BOOKING LINK:
-- ONLY send it if the customer specifically asks "how do I book?" or "where do I book?"
-- Don't send it with price quotes unless they ask
-- Most customers will book when they're ready without being prompted`;
+BOOKING LINK - VERY IMPORTANT:
+DO NOT include the booking link (${bookingUrl}) in your responses.
+The customer can find it themselves if they want to book.
+ONLY send it if they explicitly ask "how do I book?" or "where can I book?" or "send me the link"`;
 
   return prompt;
 }
