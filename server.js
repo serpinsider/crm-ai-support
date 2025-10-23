@@ -331,7 +331,7 @@ Answer helpfully. If giving a price, include the booking link.`;
     }
     
     const response = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
+      model: 'claude-3-5-sonnet-20241022',
       max_tokens: 150, // Keep short to force brevity
       temperature: 0.5, // Lower for consistency
       system: SYSTEM_PROMPT,
