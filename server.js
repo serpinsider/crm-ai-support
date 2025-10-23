@@ -262,34 +262,39 @@ async function generateAIResponse(message, conversationHistory) {
     // Check if quote/link was already sent
     const quoteSent = wasQuoteSent(conversationHistory);
     
+    console.log('🔍 Context extraction:', {
+      bedrooms: propertyDetails.bedrooms,
+      bathrooms: propertyDetails.bathrooms,
+      serviceType: propertyDetails.serviceType,
+      quoteSent,
+      historyLength: conversationHistory.length
+    });
+    
     // Build enhanced prompt with extracted context
     let promptContext = '';
     
-    if (conversationContext) {
-      promptContext = `CONVERSATION SO FAR:
+    if (conversationContext && conversationHistory.length > 0) {
+      promptContext = `PREVIOUS MESSAGES IN THIS CONVERSATION:
 ${conversationContext}
 
-CONTEXT:
-- Property discussed: ${propertyDetails.bedrooms || 'not specified'} bed, ${propertyDetails.bathrooms || 'not specified'} bath
-- Service type: ${propertyDetails.serviceType}
-- Add-ons mentioned: ${propertyDetails.addons.length > 0 ? propertyDetails.addons.join(', ') : 'none'}
-- Quote already sent: ${quoteSent ? 'YES - you already sent pricing and/or booking link' : 'NO - this is first time discussing pricing'}
+IMPORTANT CONTEXT YOU MUST REMEMBER:
+The customer asked about a ${propertyDetails.bedrooms} bedroom, ${propertyDetails.bathrooms} bathroom ${propertyDetails.serviceType}.
+${quoteSent ? 'You already gave them a price and booking link.' : 'This is their first pricing question.'}
 
-CUSTOMER'S NEW MESSAGE:
+THEIR NEW QUESTION:
 ${messageContent}
 
-IMPORTANT:
-${quoteSent ? 
-  '- You ALREADY sent them a quote and booking link above\n- Just answer their question helpfully\n- DON\'T send the booking link again unless they ask\n- They\'re asking a follow-up about the SAME property' :
-  '- This is their first pricing question\n- Include the booking link after giving the price'
-}
-- If they ask "what about [different service]" - use the SAME property size from before
-- Answer based on the original quote you sent
-- Be short, friendly, and conversational (like the examples you were given)`;
+RULES:
+1. They're asking about the SAME property (${propertyDetails.bedrooms}bd/${propertyDetails.bathrooms}ba) unless they specify different
+2. ${quoteSent ? 'DON\'T send the booking link again - you already sent it' : 'Include the booking link'}
+3. Calculate the price based on what they originally asked about
+4. Keep it short and friendly
+
+Answer their question:`;
     } else {
       promptContext = `Customer: ${messageContent}
 
-This is the first message. Answer helpfully and include booking link if giving a price.`;
+Answer helpfully. If giving a price, include the booking link.`;
     }
     
     const response = await anthropic.messages.create({
@@ -398,6 +403,13 @@ app.post('/webhook/incoming-message', async (req, res) => {
     console.log('📜 Fetching conversation history...');
     const conversationHistory = await getConversationHistory(conversationId);
     console.log(`📚 Found ${conversationHistory.length} previous messages`);
+    
+    if (conversationHistory.length > 0) {
+      console.log('📝 Recent messages:', conversationHistory.slice(-3).map(m => ({
+        direction: m.direction,
+        content: (m.body || m.content || '').substring(0, 50)
+      })));
+    }
     
     // Decide if we should auto-respond
     const decision = await shouldAutoRespond(messageData, conversationHistory);
