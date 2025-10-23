@@ -139,21 +139,33 @@ async function sendSMS(toNumber, message, fromNumber = TEST_PHONE) {
 // Get conversation history from OpenPhone
 async function getConversationHistory(conversationId) {
   try {
+    // OpenPhone v3 API uses different endpoint structure
     const response = await axios({
       method: 'get',
-      url: `${OPENPHONE_API}/messages?conversationId=${conversationId}&limit=20`,
+      url: `${OPENPHONE_API}/conversations/${conversationId}/messages`,
       headers: {
         'Authorization': OPENPHONE_API_KEY,
         'Content-Type': 'application/json'
+      },
+      params: {
+        maxResults: 20
       }
     });
     
     if (response.data && response.data.data) {
-      return response.data.data.reverse(); // Oldest first
+      // Filter out our own messages, keep only customer messages and our responses
+      const messages = response.data.data
+        .filter(msg => msg.direction === 'incoming' || msg.direction === 'outgoing')
+        .reverse(); // Oldest first
+      
+      console.log(`📋 Retrieved ${messages.length} messages from conversation history`);
+      return messages;
     }
     return [];
   } catch (error) {
-    console.error('Failed to fetch conversation history:', error.message);
+    console.error('Failed to fetch conversation history:', error.response?.data || error.message);
+    console.error('Conversation ID:', conversationId);
+    // Return empty array so bot can still respond (just without context)
     return [];
   }
 }
