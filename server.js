@@ -4,6 +4,7 @@ import Anthropic from '@anthropic-ai/sdk';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import { buildSystemPrompt } from './config/prompt-builder.js';
+import { parsePropertyDetails } from './integrations/mesa-maids-api.js';
 
 dotenv.config();
 
@@ -159,9 +160,12 @@ async function getConversationHistory(conversationId) {
 
 // Build conversation context for Claude
 function buildConversationContext(messages) {
+  if (!messages || messages.length === 0) return '';
+  
   const context = messages.map(msg => {
-    const role = msg.direction === 'incoming' ? 'Customer' : 'You';
-    return `${role}: ${msg.content}`;
+    const role = msg.direction === 'incoming' ? 'Customer' : 'You (Sarah)';
+    const content = msg.body || msg.content || '';
+    return `${role}: ${content}`;
   }).join('\n');
   
   return context;
@@ -215,12 +219,44 @@ async function shouldAutoRespond(message, conversationHistory) {
 // Generate AI response using Claude
 async function generateAIResponse(message, conversationHistory) {
   try {
-    // Build context from conversation history
-    const conversationContext = conversationHistory.length > 0
-      ? `\n\nPREVIOUS CONVERSATION:\n${buildConversationContext(conversationHistory)}\n\nCURRENT MESSAGE:`
-      : '';
-    
     const messageContent = message.body || message.content;
+    
+    // Parse property details from current message and history
+    const propertyDetails = parsePropertyDetails(messageContent, conversationHistory);
+    
+    // Build context from conversation history
+    let conversationContext = '';
+    if (conversationHistory.length > 0) {
+      conversationContext = buildConversationContext(conversationHistory);
+    }
+    
+    // Build enhanced prompt with extracted context
+    let promptContext = '';
+    
+    if (conversationContext) {
+      promptContext = `PREVIOUS CONVERSATION (THIS IS IMPORTANT - REMEMBER THE CONTEXT):
+${conversationContext}
+
+EXTRACTED CONTEXT FROM CONVERSATION:
+- Property: ${propertyDetails.bedrooms || 'unknown'} bedrooms, ${propertyDetails.bathrooms || 'unknown'} bathrooms
+- Service Type: ${propertyDetails.serviceType}
+- Add-ons mentioned: ${propertyDetails.addons.length > 0 ? propertyDetails.addons.join(', ') : 'none'}
+
+CURRENT CUSTOMER MESSAGE:
+${messageContent}
+
+CRITICAL INSTRUCTIONS:
+1. This is a CONTINUATION of the conversation above
+2. The customer is asking about the SAME property (${propertyDetails.bedrooms}bd/${propertyDetails.bathrooms}ba) unless they explicitly say otherwise
+3. They already discussed ${propertyDetails.serviceType} - remember this
+4. If they ask "what if it was [different service]" - use the SAME property size they mentioned before
+5. If they ask to add/remove things - calculate based on what was already discussed
+6. Be specific with numbers and pricing
+
+Provide a helpful, concise response (1-3 sentences preferred).`;
+    } else {
+      promptContext = `Customer: ${messageContent}\n\nProvide a helpful, concise response (1-3 sentences preferred).`;
+    }
     
     const response = await anthropic.messages.create({
       model: 'claude-3-haiku-20240307',
@@ -230,7 +266,7 @@ async function generateAIResponse(message, conversationHistory) {
       messages: [
         {
           role: 'user',
-          content: `${conversationContext}\nCustomer: ${messageContent}\n\nProvide a helpful, concise response (1-3 sentences preferred).`
+          content: promptContext
         }
       ]
     });
