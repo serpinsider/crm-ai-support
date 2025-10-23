@@ -148,7 +148,7 @@ export const AVAILABILITY = {
     thursday: '8:00 AM - 6:00 PM',
     friday: '8:00 AM - 6:00 PM',
     saturday: '8:00 AM - 6:00 PM',
-    sunday: 'Closed'
+    sunday: '8:00 AM - 6:00 PM'
   },
   
   bookingWindow: 'Typically available within 2-5 business days',

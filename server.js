@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import { buildSystemPrompt } from './config/prompt-builder.js';
 import { parsePropertyDetails } from './integrations/mesa-maids-api.js';
+import { createQuoteInSystem, extractPriceFromResponse, responseContainsPricing } from './integrations/quote-creator.js';
+import { isInBookingFlow, handleBookingFlowStep, startBookingFlow } from './integrations/booking-flow.js';
 
 dotenv.config();
 
@@ -139,6 +141,7 @@ async function sendSMS(toNumber, message, fromNumber = TEST_PHONE) {
 // Simple conversation memory (in-memory storage)
 // TODO: Replace with database for persistence across server restarts
 const conversationMemory = new Map();
+const conversationQuotes = new Map(); // Track quotes per conversation
 
 function storeMessage(conversationId, message) {
   if (!conversationMemory.has(conversationId)) {
@@ -442,6 +445,53 @@ app.post('/webhook/incoming-message', async (req, res) => {
       createdAt: messageData.createdAt
     });
     
+    // Check if customer is in booking flow
+    if (isInBookingFlow(conversationId)) {
+      console.log('📝 Customer in booking flow, handling step...');
+      const flowResponse = await handleBookingFlowStep(messageData, conversationId);
+      
+      if (flowResponse) {
+        await sendSMS(customerPhone, flowResponse, messageData.to);
+        storeMessage(conversationId, {
+          direction: 'outgoing',
+          body: flowResponse,
+          createdAt: new Date().toISOString()
+        });
+        console.log('✅ Booking flow step handled');
+        return res.sendStatus(200);
+      }
+    }
+    
+    // Check for customer's choice after quote
+    const messageLower = messageContent.toLowerCase();
+    if (messageLower.includes('link') || messageLower.includes('send me')) {
+      // Customer wants link - get the most recent quote
+      const quotes = await getQuotesForConversation(conversationId);
+      if (quotes.length > 0) {
+        const latest = quotes[0];
+        await sendSMS(customerPhone, `Here's your link with ${latest.bedrooms}bd/${latest.bathrooms}ba ${latest.serviceType} saved:
+
+${latest.bookingUrl}`, messageData.to);
+        return res.sendStatus(200);
+      }
+    } else if (messageLower.includes('book it') || messageLower.includes('book for me')) {
+      // Customer wants direct booking
+      const quotes = await getQuotesForConversation(conversationId);
+      if (quotes.length > 0) {
+        const latest = quotes[0];
+        startBookingFlow(conversationId, {
+          bedrooms: latest.bedrooms,
+          bathrooms: latest.bathrooms,
+          serviceType: latest.serviceType,
+          addons: latest.addons,
+          totalPrice: latest.totalPrice
+        });
+        
+        await sendSMS(customerPhone, "Sure! What date works for you?", messageData.to);
+        return res.sendStatus(200);
+      }
+    }
+    
     // Check if auto-response is enabled
     if (!ENABLE_AUTO_RESPONSE) {
       console.log('⚠️  Auto-response disabled, skipping');
@@ -490,9 +540,58 @@ app.post('/webhook/incoming-message', async (req, res) => {
       return res.sendStatus(200);
     }
     
+    // Check if this is a pricing response and create quote
+    let finalMessage = aiResponse.message;
+    
+    if (responseContainsPricing(aiResponse.message) && !quoteSent) {
+      // This is the first price quote - create it in the system
+      const price = extractPriceFromResponse(aiResponse.message);
+      
+      if (price && propertyDetails.bedrooms && propertyDetails.bathrooms) {
+        console.log('💰 Creating quote in Mesa system...');
+        
+        const quoteResult = await createQuoteInSystem({
+          phoneNumber: customerPhone,
+          bedrooms: propertyDetails.bedrooms,
+          bathrooms: propertyDetails.bathrooms,
+          serviceType: propertyDetails.serviceType,
+          addons: propertyDetails.addons,
+          totalPrice: price,
+          conversationId: conversationId
+        });
+        
+        if (quoteResult.success) {
+          console.log('✅ Quote created:', quoteResult.quoteCode);
+          
+          // Store quote for this conversation
+          if (!conversationQuotes.has(conversationId)) {
+            conversationQuotes.set(conversationId, []);
+          }
+          conversationQuotes.get(conversationId).unshift({
+            ...quoteResult,
+            bedrooms: propertyDetails.bedrooms,
+            bathrooms: propertyDetails.bathrooms,
+            serviceType: propertyDetails.serviceType,
+            addons: propertyDetails.addons,
+            totalPrice: price
+          });
+          
+          // Add option for customer to choose
+          finalMessage = `${aiResponse.message}
+
+Want a booking link with this saved, or want me to book it for you now?`;
+        }
+      }
+    }
+    
+    // Helper function to get quotes for conversation
+    async function getQuotesForConversation(convId) {
+      return conversationQuotes.get(convId) || [];
+    }
+    
     // Send response
     console.log('📤 Sending AI response...');
-    const sendResult = await sendSMS(customerPhone, aiResponse.message, messageData.to);
+    const sendResult = await sendSMS(customerPhone, finalMessage, messageData.to);
     
     if (sendResult.success) {
       recordResponse(customerPhone);
@@ -500,7 +599,7 @@ app.post('/webhook/incoming-message', async (req, res) => {
       // Store our response in memory
       storeMessage(conversationId, {
         direction: 'outgoing',
-        body: aiResponse.message,
+        body: finalMessage,
         createdAt: new Date().toISOString()
       });
       
