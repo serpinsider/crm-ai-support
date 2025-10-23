@@ -487,7 +487,7 @@ ${latest.bookingUrl}`, messageData.to);
           totalPrice: latest.totalPrice
         });
         
-        await sendSMS(customerPhone, "Sure! What date works for you?", messageData.to);
+        await sendSMS(customerPhone, "Sure! What's your home address?", messageData.to);
         return res.sendStatus(200);
       }
     }
