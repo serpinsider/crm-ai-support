@@ -130,13 +130,24 @@ export const PRICING = {
     'Tile and grout': 40,
     'Hardwood': 40,
     'Office cleaning': 50,
-    'Townhouse': 100
+    'Townhouse': 100,
+    'Stairs': 100
+  },
+  
+  specialPricing: {
+    extraTimeRate: 60, // per hour if place needs more time
+    firstTimeDiscount: 25, // $25 off first 3 cleans
+    largePropertyDiscount: '10% off for 3 bedrooms or more'
   },
   
   addonNotes: {
-    'Inside fridge': 'Standard clean wipes outside only, addon cleans inside',
-    'Inside oven': 'Standard clean wipes outside only, addon cleans inside', 
-    'Inside microwave': 'Standard clean wipes outside only, addon cleans inside'
+    'Inside fridge': 'Standard wipes outside, addon cleans inside',
+    'Inside oven': 'Standard wipes outside, addon cleans inside', 
+    'Inside microwave': 'Standard wipes outside, addon cleans inside',
+    'Townhouse': 'May be $100 extra based on stairs',
+    'Basement': '$100',
+    'Stairs': '$100',
+    'Office': '$50'
   },
   
   discounts: {
@@ -172,13 +183,14 @@ export const POLICIES = {
 
 export const AVAILABILITY = {
   businessHours: {
-    'Monday-Saturday': '8:00 AM - 6:00 PM',
-    'Sunday': 'Closed'
+    'Every day': '8:00 AM - 6:00 PM (7 days a week)'
   },
   
-  bookingWindow: 'Typically available within 2-5 business days',
+  scheduling: 'We can usually accommodate most day/time requests. Check mesamaids.com/booking for available slots.',
   
-  peakTimes: 'Weekends and end-of-month are busiest - book 1-2 weeks ahead for preferred slots'
+  bookingWindow: 'Usually available within a few days',
+  
+  peakTimes: 'Weekends are busiest - book ahead for preferred times'
 };
 
 export const FAQ = {

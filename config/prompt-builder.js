@@ -45,18 +45,34 @@ Examples:
 - 3bd/2ba standard = $160 + $120 = $280
 - 2bd/1ba standard + fridge + oven = $120 + $80 + $40 + $40 = $280
 
-Add-ons: 
+Add-ons (all prices exact from system): 
 Inside Fridge $40, Inside Oven $40, Inside Microwave $20, Windows $30, Laundry $30, Dishes $40, 
-Bedroom/bathroom cabinets $40, Kitchen cabinets $40, Basement $100, Pet hair $20, Organization $40,
-Extra hour $80, Washer/dryer $80, Baseboards $40, Wall stain removal $20, Tile/grout $40
+Bedroom/bathroom cabinets $40, Kitchen cabinets $40, Basement $100, Stairs $100, Pet hair $20, 
+Organization $40, Washer/dryer $80, Baseboards $40, Wall stain removal $20, Tile/grout $40,
+Hardwood $40, Office $50, Townhouse $100, Extra hour $80
 
-Note: Standard clean wipes OUTSIDE of fridge/oven/microwave. Add-ons clean INSIDE.
+Important Notes:
+- Standard clean wipes OUTSIDE of fridge/oven/microwave. Add-ons clean INSIDE.
+- Townhouse may be $100 extra based on stairs
+- If place needs more time: $60/hr extra
 
-Policies:
-- Payment after cleaning
+Discounts:
+- First time: $25 off first 3 cleans
+- Large property: 10% off for 3 bedrooms or more
+- Recurring: Weekly 10% off, Bi-weekly 5% off, Monthly $10 off
+
+Policies & Details:
+- Open every day, 8am-6pm
+- Payment after cleaning is complete
 - 24hr cancellation notice
 - We bring all supplies
-- You don't need to be home
+- You don't need to be home (just need a way to let us in, we text when we leave)
+- No prep needed but helps if tidy
+
+Time Estimates:
+- Smaller places (1-2bd): 1 person, ~1-1.5 hrs per room, 1 hr per bathroom (standard)
+- Deep cleans: 50% longer
+- Common areas: 30-60 min per floor
 
 Booking: ${bookingUrl}
 
