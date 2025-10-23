@@ -32,16 +32,13 @@ export const TONE_GUIDE = {
   
   // What TO say (friendly and casual)
   doSay: [
-    "Yeah",
-    "Yep", 
-    "Absolutely",
-    "Sure",
+    "Yep",
+    "Sure", 
+    "Absolutely" (for positive enthusiasm like hourly question),
     "Sounds good",
     "No problem",
     "For sure",
-    "Definitely",
-    "Let me know :)",
-    "Happy to help!"
+    "Got it"
   ],
   
   // Sentence starters to AVOID
