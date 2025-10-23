@@ -521,6 +521,9 @@ ${latest.bookingUrl}`, messageData.to);
       return res.sendStatus(200);
     }
     
+    // Parse property details first (needed for quote creation)
+    const propertyDetails = parsePropertyDetails(messageContent, conversationHistory);
+    
     // Check if quote/link was already sent
     const quoteSent = wasQuoteSent(conversationHistory);
     
