@@ -660,7 +660,196 @@ Quarterly: "Quick update - you're almost at Gold tier! 1 more property this quar
 
 ---
 
-## Phase 8: Multi-Location Support (Future)
+## Phase 8: Business/Office Outreach (Future)
+
+### Target Businesses That Need Cleaning:
+- **Wellness studios** (yoga, pilates, gyms, spas)
+- **Startups/coworking spaces** (WeWork-style spaces)
+- **Medical offices** (dentists, chiropractors, clinics)
+- **Professional offices** (law firms, accounting, insurance)
+- **Retail stores** (boutiques, showrooms)
+- **Restaurants** (post-close deep cleaning)
+- **Salons/barbershops**
+
+### Simple Outreach Message:
+```
+Hey [Business Name],
+
+We do commercial cleaning for [business type] in [area].
+
+Would you be interested in a quote for regular cleaning?
+
+Let me know!
+```
+
+### Conversation:
+```
+Business: "Yeah, how much?"
+Bot: "How many square feet?"
+
+Business: "1500 sq ft"
+Bot: "For 1500 sq ft, weekly cleaning is about $300/month."
+
+Business: "What's included?"
+Bot: "Floors, bathrooms, trash, surfaces, kitchen area. Takes 2-3 hours per visit."
+
+Business: "Sounds good"
+Bot: "Awesome! Want to schedule a walkthrough?"
+```
+
+---
+
+## Phase 9: Cross-Promotion Partnerships (Future)
+
+### Partner With Complementary Businesses:
+
+**Type 1: Customer Overlap (Revenue Share)**
+
+**Laundromats:**
+- Their customers = people who need services
+- Offer: "Get 10% off Mesa Maids cleaning - mention [Laundromat Name]"
+- We pay laundromat: $20-30 per booking referral
+- They display our flyers, we send customers to them
+
+**Wellness Studios (Yoga, Pilates, Gyms):**
+- Members = homeowners who value clean spaces
+- Cross-promote: "Studio members get 15% off Mesa Maids"
+- We offer: "Customers get free week at [Studio Name]"
+- Co-marketing on social media
+
+**Home Organization Services:**
+- They organize, we clean
+- Bundle: "Book organizing + cleaning, save 20%"
+- Split revenue 50/50 or refer to each other
+
+**Moving Companies:**
+- Every move = potential move-in/move-out clean
+- Offer their customers: "Book cleaning with your move, get 10% off"
+- They get: $30-50 per referral
+
+**Real Estate Staging Companies:**
+- They stage, we clean
+- Partner on listings together
+- Share client base
+
+**Home Improvement/Contractors:**
+- Post-construction cleaning
+- "Had work done? We clean up after contractors"
+- Revenue share on referrals
+
+**Type 2: Local Business Networks**
+
+**Coffee Shops/Cafes:**
+- Leave flyers with promo code
+- "Mention [Cafe Name], get $20 off first clean"
+- We buy coffee for the staff monthly
+
+**Neighborhood Facebook Groups:**
+- Partner with group admins
+- Exclusive group member discount
+- Word-of-mouth marketing
+
+**HOA Partnerships:**
+- Offer resident discount
+- Become "preferred vendor"
+- Regular presence at HOA events
+
+### Implementation:
+
+**Partnership Database:**
+```javascript
+{
+  businessName: "Zen Yoga Studio",
+  businessType: "Wellness",
+  phone: "+14805551234",
+  contactName: "Owner Name",
+  partnershipType: "cross_promotion",
+  deal: {
+    theyOffer: "10% off Mesa Maids to members",
+    weOffer: "Free week pass to Zen Yoga for customers",
+    revenue_share: null
+  },
+  OR
+  deal: {
+    theyRefer: "Customers to us",
+    wePay: "$25 per booking",
+    revenue_share: "per_booking"
+  },
+  startDate: "2025-01-01",
+  bookingsGenerated: 0,
+  revenueGenerated: 0,
+  status: "active"
+}
+```
+
+**Outreach Messages:**
+
+**To Laundromat:**
+```
+Hey [Name],
+
+We do residential cleaning in Mesa. 
+
+Wanted to reach out about a partnership - we could offer your customers 10% off cleaning services, and we'd pay you $25 for each booking.
+
+Would you be interested in a simple referral partnership?
+```
+
+**To Yoga Studio:**
+```
+Hey [Name],
+
+We do home cleaning in Mesa and thought about partnering with [Studio Name].
+
+Idea: Your members get 15% off cleaning, our customers get a free week pass to your studio.
+
+Cross-promote to each other's customers?
+
+Let me know!
+```
+
+**To Moving Company:**
+```
+Hey [Name],
+
+We do move-in/move-out cleaning. 
+
+Want to partner? We could offer your customers cleaning packages with their moves, and pay you $30-50 per referral.
+
+Interested?
+```
+
+### Campaign Strategy:
+
+**Month 1:** Test 10 partnerships (2 laundromats, 3 wellness, 3 moving, 2 contractors)
+**Month 2:** Expand to 30 partners if working
+**Month 3:** 50+ active partnerships
+
+### Expected Results:
+
+**Conservative (50 partners × 2 bookings/month):**
+- 100 bookings/month from partnerships
+- Average booking: $250
+- Revenue: $25,000/month
+- Cost (revenue share): $2,500-5,000
+- **Net: $20,000-22,500/month**
+
+**Plus:**
+- Brand awareness in community
+- Word-of-mouth growth
+- Recurring customer base
+- Lower acquisition cost than ads
+
+### Files to Create:
+- `integrations/partnership-manager.js`
+- `mesa-maids/src/app/api/partnerships/route.ts`
+- `mesa-maids/src/app/api/partnerships/track-referral/route.ts`
+- Database table: `business_partnerships`
+- Admin dashboard: Partnership performance
+
+---
+
+## Phase 10: Multi-Location Support (Future)
 
 ### What It Does:
 Same bot handles Brooklyn Maids, Mesa Maids, STL Maids - detects which number they texted.
