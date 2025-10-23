@@ -396,7 +396,255 @@ async function sendFollowUps() {
 
 ---
 
-## Phase 7: Multi-Location Support (Future)
+## Phase 7: Realtor Partnership Outreach (Future)
+
+### What It Does:
+Automated outreach to real estate agents for move-in/move-out cleaning partnerships.
+
+### Why Realtors Are Different:
+- They need reliable vendors for every closing
+- Recurring business (multiple properties per month)
+- Higher value clients (commission-based relationships)
+- Can become referral partners vs one-time customers
+
+### How It Works:
+
+1. **Realtor Database:**
+   - Upload list of local realtors (name, phone, brokerage, specialty)
+   - Track: contacted, interested, active partnership, properties cleaned
+   - Source: Zillow, Realtor.com scraping, MLS data, local associations
+
+2. **Partnership Pitch:**
+   - Focus on move-in/move-out cleaning
+   - Offer: realtor discount, priority scheduling, direct billing
+   - Value prop: makes their listings show-ready, helps closings go smooth
+
+3. **Different Message Strategy:**
+   - More professional tone (B2B vs B2C)
+   - Emphasize reliability and quality
+   - Offer partnership benefits
+
+### Example Messages:
+
+**Initial Outreach:**
+```
+Hey [Agent Name],
+
+I'm Sarah from Mesa Maids. We specialize in move-in/move-out cleaning for real estate professionals in Mesa.
+
+We work with several agents who need reliable cleaning for their listings and new homeowners. Would you be interested in discussing a partnership?
+
+We offer priority scheduling and special pricing for realtor referrals.
+```
+
+**Follow-up 1 (no response):**
+```
+Hi [Agent Name],
+
+Following up on cleaning services for your listings. We've helped 50+ properties close faster with professional move-out cleaning.
+
+Want to chat about how we can help your clients?
+```
+
+**If interested:**
+```
+Great! Here's what we offer for realtors:
+
+- 10% discount on all move-in/move-out cleans
+- Priority scheduling (24-48hr turnaround)
+- Direct billing to you or your clients
+- Before/after photos for listings
+
+How many properties do you typically close per month?
+```
+
+**After partnership established:**
+```
+Hey [Agent Name]!
+
+Got a property that needs move-out cleaning? Just text me the address and move-out date and I'll get you on the schedule.
+```
+
+### Partnership Benefits to Offer:
+
+**For Realtors:**
+- Bulk discount (10-15% off)
+- Priority scheduling
+- After-hours availability
+- Before/after photos
+- Direct client billing option
+- Quick turnaround (24-48hrs)
+- Staging-ready cleaning
+
+**For You:**
+- Recurring business (agents close multiple homes/month)
+- Higher volume
+- Predictable revenue
+- Premium pricing (less price sensitivity)
+- Referral network (agents talk to other agents)
+
+### Implementation:
+
+**Database Schema:**
+```javascript
+{
+  realtorName: "John Smith",
+  phone: "+14805551234",
+  email: "john@remax.com",
+  brokerage: "RE/MAX",
+  specialty: "Residential",
+  averageClosingsPerMonth: "3-5",
+  serviceArea: "Mesa, Gilbert, Chandler",
+  status: "not_contacted",
+  partnershipStatus: null,
+  propertiesCleaned: 0,
+  totalRevenue: 0,
+  discountLevel: "standard_10",
+  preferredContact: "text",
+  notes: ""
+}
+```
+
+**Partnership Tiers:**
+```javascript
+{
+  "Silver": {
+    requirement: "1-2 properties/month",
+    discount: "10%",
+    benefits: ["Priority scheduling", "Same-day quotes"]
+  },
+  "Gold": {
+    requirement: "3-5 properties/month", 
+    discount: "15%",
+    benefits: ["All Silver", "After-hours availability", "Direct billing"]
+  },
+  "Platinum": {
+    requirement: "6+ properties/month",
+    discount: "20%",
+    benefits: ["All Gold", "Dedicated account manager", "24hr turnaround guarantee"]
+  }
+}
+```
+
+**Campaign Manager:**
+```javascript
+// Initial outreach (slower pace than B2C)
+async function sendRealtorOutreach() {
+  const realtors = await getUncontactedRealtors(20); // 20/day max
+  
+  for (const realtor of realtors) {
+    const message = generateRealtorPitch(realtor);
+    await sendSMS(realtor.phone, message);
+    await markAsContacted(realtor.id);
+    
+    // More spacing for B2B
+    await sleep(5000);
+  }
+}
+
+// Track partnership performance
+async function trackRealtorPerformance() {
+  const activePartners = await getActiveRealtorPartners();
+  
+  for (const partner of activePartners) {
+    const stats = {
+      propertiesThisMonth: await getPropertiesCount(partner.id),
+      revenue: await getRevenueForRealtor(partner.id),
+      averageJobSize: calculateAverage(partner.id)
+    };
+    
+    // Upgrade tier if qualified
+    if (stats.propertiesThisMonth >= 6 && partner.tier !== 'Platinum') {
+      await upgradeTier(partner.id, 'Platinum');
+      await sendUpgradeNotification(partner);
+    }
+  }
+}
+
+// Monthly relationship maintenance
+async function sendMonthlyUpdate() {
+  const activePartners = await getActiveRealtorPartners();
+  
+  for (const partner of activePartners) {
+    const message = `Hey ${partner.name}! Quick update: We cleaned ${partner.propertiesLastMonth} properties for you last month. Thanks for the partnership! Let me know if you have any coming up.`;
+    
+    await sendSMS(partner.phone, message);
+  }
+}
+```
+
+### Files to Create:
+- `integrations/realtor-outreach-manager.js`
+- `mesa-maids/src/app/api/outreach/realtors/route.ts`
+- `mesa-maids/src/app/api/outreach/realtor-stats/route.ts`
+- `mesa-maids/src/app/api/cron/realtor-followups/route.ts`
+- Database table: `realtor_partners`
+
+### Admin Interface Features:
+- Upload realtor list (CSV from MLS data)
+- View partnership dashboard (active, tier, properties cleaned, revenue)
+- Track which agent referred which property
+- Commission tracking (if offering referral fees)
+- Performance reports per realtor
+
+### Conversation Flow:
+
+**Phase 1: Outreach**
+```
+Bot: Initial pitch
+Realtor: "Tell me more"
+Bot: Explains services, pricing, benefits
+Realtor: "Sounds good"
+Bot: "Awesome! Can I get your email to send partnership details?"
+→ Creates partnership record
+→ Sends partnership agreement via email
+```
+
+**Phase 2: Active Partnership**
+```
+Realtor: "Got a 3bd/2ba move-out at 123 Main St, need it done by Friday"
+Bot: Recognizes partner, applies discount
+Bot: "Got it! 3bd/2ba move-out is $270 (with your 10% partner discount). I'll schedule for Thursday. Confirm?"
+Realtor: "Yes"
+Bot: Creates booking, sends confirmation
+```
+
+**Phase 3: Relationship Management**
+```
+Monthly: "Hey John! You sent us 4 properties last month. Thanks for the partnership!"
+Quarterly: "Quick update - you're almost at Gold tier! 1 more property this quarter gets you 15% discount."
+```
+
+### Metrics to Track:
+- Realtors contacted
+- Partnership conversion rate
+- Active partnerships
+- Properties per partner
+- Revenue per partner
+- Referral tier distribution
+- Average job size (realtors vs regular customers)
+- Partnership retention rate
+
+### Expected ROI:
+- 100 realtors contacted
+- 20% become partners = 20 active realtors
+- Average 3 properties/month each = 60 jobs/month
+- Average move-out: $350
+- Monthly revenue: $21,000
+- Even at 15% discount: $17,850/month
+- **High-value recurring channel**
+
+### Why This Is Powerful:
+- One realtor = multiple customers/month
+- Predictable pipeline
+- Premium pricing (less negotiation)
+- Word-of-mouth in realtor community
+- Can become primary revenue source
+- Realtors appreciate reliable vendors
+
+---
+
+## Phase 8: Multi-Location Support (Future)
 
 ### What It Does:
 Same bot handles Brooklyn Maids, Mesa Maids, STL Maids - detects which number they texted.
