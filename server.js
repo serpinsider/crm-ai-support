@@ -521,6 +521,9 @@ ${latest.bookingUrl}`, messageData.to);
       return res.sendStatus(200);
     }
     
+    // Check if quote/link was already sent
+    const quoteSent = wasQuoteSent(conversationHistory);
+    
     // Generate AI response
     console.log('🤖 Generating AI response...');
     const aiResponse = await generateAIResponse(messageData, conversationHistory);
