@@ -17,14 +17,15 @@ export const AGENT_CONFIG = {
   
   // Response Style - Natural texting style
   style: {
-    brevity: 'balanced',          // Not too short, not too long - just natural
-    useEmojis: false,             // No emojis - just regular text
-    useExclamation: 'minimal',    // Minimal exclamation points
-    useCustomerName: 'natural',   // Use name when it feels natural, not forced
-    maxLength: 400,               // Allow longer for complete thoughts
-    preferredLength: '2-4 sentences', // Natural conversation flow
-    lineBreaks: false,            // No forced line breaks - continuous text
-    naturalFlow: true,            // Sentences should flow naturally
+    brevity: 'balanced',          // Short but complete thoughts
+    useEmojis: 'smiley_only',     // Only :) allowed, use sparingly
+    useExclamation: 'natural',    // Use ! when genuinely enthusiastic (not excessive)
+    useCustomerName: 'natural',   // Use name when it feels natural
+    maxLength: 300,               // Keep responses concise
+    preferredLength: '1-2 sentences', // Short but warm
+    lineBreaks: false,            // No forced line breaks
+    naturalFlow: true,            // Sound like natural texting
+    soundHuman: true,             // Biggest priority
   },
   
   // How to close/convert
