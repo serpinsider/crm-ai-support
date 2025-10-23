@@ -244,7 +244,159 @@ Only build this if you see customers asking "can you just book me?" frequently. 
 
 ---
 
-## Phase 6: Multi-Location Support (Future)
+## Phase 6: Cold Outreach Campaign (Future)
+
+### What It Does:
+Automated cold outreach to businesses for commercial cleaning services.
+
+### How It Works:
+1. **Business Database:**
+   - Upload list of target businesses (name, phone, industry, size)
+   - Track: contacted, responded, converted, not interested
+   
+2. **Personalized Messages:**
+   - AI generates personalized outreach based on business info
+   - Different templates for: offices, restaurants, retail, medical, etc.
+   - Mention specific business details (found online or provided)
+
+3. **Drip Campaign:**
+   - Initial message: "Hey [business name], we do commercial cleaning in [area]..."
+   - Follow-up 1 (3 days): If no response
+   - Follow-up 2 (1 week): Different angle
+   - Mark as "not interested" after 3 attempts
+
+4. **Conversation Handoff:**
+   - If they respond interested → AI answers questions
+   - When ready → Human takes over or AI books discovery call
+
+### Example Messages:
+
+**Initial:**
+```
+Hey [Business Name], 
+
+We do commercial cleaning for offices in Mesa. Noticed you're on [Street Name]. 
+
+Would you be interested in a quote for regular office cleaning? We work with businesses your size all the time.
+
+Let me know if you'd like to hear more!
+```
+
+**Follow-up 1 (no response):**
+```
+Just following up from last week. We're offering 20% off for new commercial clients this month. 
+
+Want a free quote for your office?
+```
+
+**If interested:**
+```
+Awesome! How many square feet is your office? And how often would you want service - daily, weekly, or bi-weekly?
+```
+
+### Implementation:
+
+**Database Schema:**
+```javascript
+{
+  businessName: "ABC Law Firm",
+  phone: "+14805551234",
+  address: "123 Main St, Mesa",
+  industry: "Office/Legal",
+  squareFeet: "2000",
+  employees: "10-20",
+  status: "not_contacted",
+  contactedAt: null,
+  respondedAt: null,
+  interestedStatus: null,
+  notes: ""
+}
+```
+
+**Campaign Manager:**
+```javascript
+// Send initial outreach batch (50-100/day max)
+async function sendOutreachBatch() {
+  const businesses = await getUncontactedBusinesses(50);
+  
+  for (const business of businesses) {
+    const message = generatePersonalizedOutreach(business);
+    await sendSMS(business.phone, message);
+    await markAsContacted(business.id);
+    
+    // Delay between sends to avoid spam detection
+    await sleep(2000);
+  }
+}
+
+// Check for responses and follow up
+async function handleOutreachResponses() {
+  const responses = await getOutreachResponses();
+  
+  for (const response of responses) {
+    if (response.interested) {
+      // AI engages with questions
+      await handleCommercialInquiry(response);
+    } else if (response.notInterested) {
+      // Mark as DNC
+      await markAsNotInterested(response.businessId);
+    }
+  }
+}
+
+// Follow-up campaign
+async function sendFollowUps() {
+  // After 3 days, no response
+  const needsFollowUp = await getBusinessesForFollowUp();
+  
+  for (const business of needsFollowUp) {
+    const followUpMessage = generateFollowUpMessage(business);
+    await sendSMS(business.phone, followUpMessage);
+    await updateFollowUpCount(business.id);
+  }
+}
+```
+
+### Files to Create:
+- `integrations/cold-outreach-manager.js` - Campaign logic
+- `mesa-maids/src/app/api/outreach/businesses/route.ts` - Manage business list
+- `mesa-maids/src/app/api/outreach/send-batch/route.ts` - Send outreach batch
+- `mesa-maids/src/app/api/cron/outreach-followups/route.ts` - Automated follow-ups
+- Database table: `outreach_businesses`
+
+### Admin Interface:
+- Upload business list (CSV)
+- View campaign stats (sent, responded, interested, converted)
+- Manually mark businesses as DNC or interested
+- Review conversations
+- Adjust templates
+
+### Compliance & Safety:
+- Respect Do Not Contact (DNC) list
+- Max sends per day (avoid spam flags)
+- Unsubscribe option: "Reply STOP to opt out"
+- Only send during business hours
+- Track opt-outs immediately
+
+### Metrics to Track:
+- Messages sent
+- Response rate
+- Interest rate
+- Conversion to quote/booking
+- Cost per acquisition
+- ROI per campaign
+
+### Estimated Results:
+- 100 businesses contacted
+- 20% response rate = 20 responses
+- 50% of responses interested = 10 leads
+- 30% of leads convert = 3 new commercial clients
+- Average commercial contract: $500-2000/month
+- Monthly recurring revenue: $1500-6000
+
+---
+
+## Phase 7: Multi-Location Support (Future)
 
 ### What It Does:
 Same bot handles Brooklyn Maids, Mesa Maids, STL Maids - detects which number they texted.
