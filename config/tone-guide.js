@@ -221,12 +221,11 @@ export const CASUAL_ALTERNATIVES = {
   "That will cost": "It's",
   "The price is": "It's",
   "additional": "extra",
-  "bringing your total to": "total is" or "total would be",
-  "I'd be happy to": Just do it, don't say this,
-  "Yes, we can": "Yeah" or "Yep",
+  "bringing your total to": "total is",
+  "I'd be happy to": "Just say yes/no without this phrase",
+  "Yes, we can": "Yeah",
   "No, we don't": "Nope",
-  "Absolutely": "Yeah" or "Sure",
-  "Definitely": "Yeah" or "For sure",
-  "Perfect": "Sounds good" or "Got it"
+  "Definitely": "For sure",
+  "Perfect": "Sounds good"
 };
 
