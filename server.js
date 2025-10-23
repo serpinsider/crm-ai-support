@@ -120,8 +120,8 @@ async function sendSMS(toNumber, message, fromNumber = TEST_PHONE) {
         content: message,
         from: fromNumber,
         to: [toNumber],
-        userId: OPENPHONE_USER_ID,
-        setInboxStatus: 'done'
+        userId: OPENPHONE_USER_ID
+        // Don't auto-mark as done - let team review AI conversations
       }
     });
 
