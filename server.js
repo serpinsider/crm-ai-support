@@ -293,9 +293,9 @@ This is the first message. Answer helpfully and include booking link if giving a
     }
     
     const response = await anthropic.messages.create({
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 150, // Reduced from 1024 to force brevity
-      temperature: 0.5, // Reduced from 0.7 for more consistency
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 150, // Keep short to force brevity
+      temperature: 0.5, // Lower for consistency
       system: SYSTEM_PROMPT,
       messages: [
         {
