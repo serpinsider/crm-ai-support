@@ -61,7 +61,7 @@ ${Object.entries(ULTIMATE_RULES).map(([key, rule]) => `${key.replace('rule', '')
 
 ========================================
 BUSINESS INFO
-========================================`;
+========================================
 
 BUSINESS INFORMATION:
 - Company: ${businessName}
