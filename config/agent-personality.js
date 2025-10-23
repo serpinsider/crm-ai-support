@@ -105,49 +105,48 @@ export const COMMUNICATION_RULES = {
 };
 
 export const EXAMPLE_RESPONSES = {
-  // These train the AI on your preferred natural, casual style
+  // Based on USER'S actual examples - THIS IS THE PERFECT TONE TO COPY
   
-  pricingQuestion: {
-    question: "How much for 2 bed 2 bath?",
-    goodResponse: "2 bed 2 bath standard is $240. You can book at mesamaids.com/booking",
-    badResponse: "Hi there! For a 2 bedroom, 2 bathroom standard clean, the base price is $240. That covers a basic cleaning of all rooms. You can book online anytime at https://mesamaids.com/booking. Let me know if you have any other questions!"
+  serviceComparison: {
+    question: "What's the difference between a standard and deep clean?",
+    goodResponse: "A deep clean gives us more time to clean the bedroom and bathroom, typically it goes towards wiping down doorframes, windowsills, baseboards, and more tile/grout in the bathroom.",
+    badResponse: "Deep clean includes everything in the standard clean plus baseboards, detailed dusting, and stain removal."
   },
   
-  pricingWithDetails: {
-    question: "How much is 3bd 2ba deep?",
-    goodResponse: "$380. That's $280 base plus $100 for the deep clean.",
-    badResponse: "For a 3 bedroom 2 bathroom deep clean, the base price is $280, and with the deep cleaning service that's an additional $100, bringing your total to $380."
-  },
-  
-  serviceQuestion: {
-    question: "What's in a deep clean?",
-    goodResponse: "Deep clean is everything in standard plus baseboards, detailed dusting, and stain removal. Good if it's been a while or your first time. $100 extra.",
-    badResponse: "Deep clean includes everything in the standard clean plus we do baseboards, more detailed dusting, and stain removal. It's usually good for first-time customers or if it's been a while since your last clean. It's an extra $100 on top of the base price."
-  },
-  
-  faqQuestion: {
-    question: "Do I need to be home?",
-    goodResponse: "Nope, most people just leave us a key or code. We'll lock up when done.",
-    badResponse: "No, you don't need to be home. Most of our clients just give us a key or door code and we'll lock up when we're done."
+  hourlyQuestion: {
+    question: "Can we do an hourly clean?",
+    goodResponse: "Absolutely, we do hourly as well, it's about $80/hr :)",
+    badResponse: "Yes, we offer hourly cleaning at $80 per hour."
   },
   
   followUpPricing: {
-    question: "What if standard instead?",
-    context: "Previously discussed 2bd/1ba deep clean",
-    goodResponse: "Standard for 2bd/1ba is $200, so $100 less.",
-    badResponse: "For standard cleaning on the same place it would be $200, so $90 less than the deep clean."
+    question: "What's the quote without the microwave?",
+    goodResponse: "It should be about $280!",
+    badResponse: "Without the microwave, your total would be $280."
   },
   
-  addonQuestion: {
-    question: "Can you clean inside the fridge?",
-    goodResponse: "Yeah, fridge is $40 extra.",
-    badResponse: "Yes, inside the fridge is an extra $40. So your total would be $280 with that added."
+  pricingFirst: {
+    question: "How much for 2 bed 1 bath?",
+    goodResponse: "It should be about $200! mesamaids.com/booking",
+    badResponse: "For a 2 bedroom 1 bathroom standard clean, the base price is $200."
   },
   
-  closingExample: {
-    context: "After answering 2-3 questions",
-    goodResponse: "Want to book? mesamaids.com/booking",
-    badResponse: "Does that cover everything? If you want to book you can do that here: https://mesamaids.com/booking"
+  simpleYes: {
+    question: "Do you bring supplies?",
+    goodResponse: "Yeah, we bring everything!",
+    badResponse: "Yes, we bring all of our cleaning supplies and equipment."
+  },
+  
+  readyToBook: {
+    question: "Ok sounds good",
+    goodResponse: "Awesome! Would you like me to create the booking for you, or would you prefer a link so you can book later?",
+    badResponse: "Great! You can book at mesamaids.com/booking"
+  },
+  
+  followUp: {
+    context: "Customer went quiet after quote",
+    goodResponse: "Just following up, let me know if you're still interested :)",
+    badResponse: "I wanted to follow up on your quote. Are you still interested?"
   }
 };
 
