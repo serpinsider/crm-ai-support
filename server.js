@@ -334,9 +334,9 @@ Answer helpfully. If giving a price, include the booking link.`;
     }
     
     const response = await anthropic.messages.create({
-      model: 'claude-3-haiku-20240307',
-      max_tokens: 200, // Slightly higher for Haiku to give complete responses
-      temperature: 0.3, // Very low for consistency
+      model: 'claude-3-5-haiku-20241022',
+      max_tokens: 150,
+      temperature: 0.5,
       system: SYSTEM_PROMPT,
       messages: [
         {
