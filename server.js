@@ -139,7 +139,8 @@ async function sendSMS(toNumber, message, fromNumber = TEST_PHONE) {
 // Get conversation history from OpenPhone
 async function getConversationHistory(conversationId) {
   try {
-    // OpenPhone v3 API uses different endpoint structure
+    // Try the conversations endpoint first
+    console.log(`🔍 Fetching from: /conversations/${conversationId}/messages`);
     const response = await axios({
       method: 'get',
       url: `${OPENPHONE_API}/conversations/${conversationId}/messages`,
@@ -152,19 +153,50 @@ async function getConversationHistory(conversationId) {
       }
     });
     
+    console.log('✅ Conversation history response:', {
+      status: response.status,
+      hasData: !!response.data,
+      dataKeys: response.data ? Object.keys(response.data) : []
+    });
+    
     if (response.data && response.data.data) {
-      // Filter out our own messages, keep only customer messages and our responses
       const messages = response.data.data
         .filter(msg => msg.direction === 'incoming' || msg.direction === 'outgoing')
         .reverse(); // Oldest first
       
-      console.log(`📋 Retrieved ${messages.length} messages from conversation history`);
+      console.log(`📋 Retrieved ${messages.length} messages`);
       return messages;
     }
+    
+    console.warn('No data in response, trying alternate endpoint...');
+    
+    // Try alternate endpoint
+    const altResponse = await axios({
+      method: 'get',
+      url: `${OPENPHONE_API}/messages`,
+      headers: {
+        'Authorization': OPENPHONE_API_KEY,
+        'Content-Type': 'application/json'
+      },
+      params: {
+        conversationId: conversationId,
+        maxResults: 20
+      }
+    });
+    
+    if (altResponse.data && altResponse.data.data) {
+      const messages = altResponse.data.data.reverse();
+      console.log(`📋 Retrieved ${messages.length} messages from alternate endpoint`);
+      return messages;
+    }
+    
     return [];
   } catch (error) {
-    console.error('Failed to fetch conversation history:', error.response?.data || error.message);
+    console.error('❌ Failed to fetch conversation history');
+    console.error('Error:', error.response?.data || error.message);
     console.error('Conversation ID:', conversationId);
+    console.error('Endpoint tried:', `${OPENPHONE_API}/conversations/${conversationId}/messages`);
+    
     // Return empty array so bot can still respond (just without context)
     return [];
   }
