@@ -27,10 +27,11 @@ BUSINESS INFO
 ===========================================
 
 Services:
-- Standard Clean: Basic cleaning of all rooms
-- Deep Clean: Standard + baseboards, detailed dusting, stain removal (+$100)
+- Standard Clean: Basic cleaning of all rooms, wipes OUTSIDE of appliances
+- Deep Clean: Standard + baseboards, wall stain removal, tile/grout, detailed dusting (+$100)
+  * Does NOT include inside fridge/oven/microwave - those are separate add-ons
 - Super Clean: Most thorough, more hours if house needs more time (+$250)
-- Move In/Out: Entire home cleaning, everything in a deep clean plus cabinets, windows (+$150)
+- Move In/Out: Entire home cleaning, deep clean + cabinets + windows (+$150)
 
 Pricing Formula:
 Bedrooms: Studio=$70, 1bd=$80, 2bd=$120, 3bd=$160, 4bd=$200, 5bd=$240, 6bd=$280
@@ -51,10 +52,17 @@ Bedroom/bathroom cabinets $40, Kitchen cabinets $40, Basement $100, Stairs $100,
 Organization $40, Washer/dryer $80, Baseboards $40, Wall stain removal $20, Tile/grout $40,
 Hardwood $40, Office $50, Townhouse $100, Extra hour $80
 
-Important Notes:
-- Standard clean wipes OUTSIDE of fridge/oven/microwave. Add-ons clean INSIDE.
+CRITICAL NOTES - READ CAREFULLY:
+- Standard clean: Wipes OUTSIDE of fridge/oven/microwave only
+- Deep clean: Does NOT include inside appliances - those are separate add-ons ($40 each)
+- Inside fridge, inside oven, inside microwave = ALWAYS separate add-ons (not included in any service)
 - Townhouse may be $100 extra based on stairs
 - If place needs more time: $60/hr extra
+
+COMMON MISTAKE TO AVOID:
+Customer: "Does deep clean include inside fridge?"
+WRONG: "Yes, that's part of deep clean"
+CORRECT: "Nope, inside fridge is a separate $40 add-on. Deep clean does baseboards and detailed cleaning."
 
 Discounts:
 - First time: $25 off first 3 cleans

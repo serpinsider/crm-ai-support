@@ -36,15 +36,20 @@ export const SERVICES = {
   },
   
   'Deep Clean': {
-    description: 'More thorough cleaning including baseboards, detailed dusting, and stain removal',
+    description: 'More thorough cleaning with baseboards, detailed dusting, and stain removal',
     additionalCost: '+$100 on top of base price',
     includes: [
       'Everything in Standard Clean',
       'Baseboard cleaning',
-      'Wall stain removal',
+      'Wall stain removal', 
       'Tile and grout cleaning',
       'Detailed dusting of vents and fixtures',
       'More time on hard-to-reach areas'
+    ],
+    doesNOTinclude: [
+      'Inside fridge (that\'s a $40 add-on)',
+      'Inside oven (that\'s a $40 add-on)',
+      'Inside microwave (that\'s a $20 add-on)'
     ],
     recommended: 'First time customers or homes that haven\'t been cleaned in a while',
     duration: '3-6 hours'
