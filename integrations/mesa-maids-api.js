@@ -86,24 +86,39 @@ export async function lookupCustomer(phone) {
 // Check if message is from the original quote bot
 function isOriginalQuoteBot(message) {
   const content = message.body || message.content || '';
-  return content.includes('I just received your inquiry') || 
-         content.includes('Our base price for a');
+  const isQuoteBot = content.includes('I just received your inquiry') || 
+         content.includes('Our base price for a') ||
+         content.includes('this is Sarah from Mesa Maids') ||
+         content.includes('this is Ellie from Brooklyn Maids');
+  
+  if (isQuoteBot) {
+    console.log('✅ Detected message from original quote bot');
+  }
+  
+  return isQuoteBot;
 }
 
 // Extract property details from original quote bot message
 function parseFromOriginalQuote(message) {
   const content = message.body || message.content || '';
   
-  // Match patterns like "2 bed 1 bath" or "2bd 1ba"
-  const propertyMatch = content.match(/(\d+)\s*(?:bed|bedroom)\s*(\d+(?:\.\d+)?)\s*(?:bath|bathroom)/i);
+  // Match patterns like "2 bed 1 bath", "4 bed 2 bath", "2bd 1ba"
+  const propertyMatch = content.match(/(\d+)\s*(?:bed|bedroom|bd)\s+(\d+(?:\.\d+)?)\s*(?:bath|bathroom|ba)/i);
   
   if (propertyMatch) {
+    console.log('✅ Parsed from original quote:', {
+      bedrooms: propertyMatch[1],
+      bathrooms: propertyMatch[2],
+      source: content.substring(0, 100)
+    });
+    
     return {
       bedrooms: propertyMatch[1],
       bathrooms: propertyMatch[2]
     };
   }
   
+  console.log('❌ Could not parse property from original quote:', content.substring(0, 100));
   return { bedrooms: null, bathrooms: null };
 }
 
