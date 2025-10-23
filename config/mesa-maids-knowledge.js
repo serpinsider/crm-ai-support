@@ -114,6 +114,7 @@ export const PRICING = {
   addons: {
     'Inside fridge': 40,
     'Inside oven': 40,
+    'Inside microwave': 20,
     'Interior windows': 30,
     'Laundry': 30,
     'Dishes': 40,
@@ -122,7 +123,20 @@ export const PRICING = {
     'Basement cleaning': 100,
     'Pet hair removal': 20,
     'Organization': 40,
-    'Extra hour': 80
+    'Extra hour': 80,
+    'Washer/dryer cleaning': 80,
+    'Baseboard cleaning': 40,
+    'Wall stain removal': 20,
+    'Tile and grout': 40,
+    'Hardwood': 40,
+    'Office cleaning': 50,
+    'Townhouse': 100
+  },
+  
+  addonNotes: {
+    'Inside fridge': 'Standard clean wipes outside only, addon cleans inside',
+    'Inside oven': 'Standard clean wipes outside only, addon cleans inside', 
+    'Inside microwave': 'Standard clean wipes outside only, addon cleans inside'
   },
   
   discounts: {

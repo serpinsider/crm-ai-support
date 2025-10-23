@@ -257,9 +257,9 @@ async function shouldAutoRespond(message, conversationHistory) {
   
   // Check if too many messages in this conversation
   const incomingCount = conversationHistory.filter(m => m.direction === 'incoming').length;
-  if (incomingCount > 5) {
+  if (incomingCount > 15) {
     console.log('🚨 Too many messages in conversation');
-    return { shouldRespond: false, reason: 'Too many messages (>5)' };
+    return { shouldRespond: false, reason: 'Too many messages (>15)' };
   }
   
   // Check rate limit
