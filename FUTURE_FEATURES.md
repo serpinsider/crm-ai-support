@@ -426,43 +426,59 @@ Automated outreach to real estate agents for move-in/move-out cleaning partnersh
 
 ### Example Messages:
 
-**Initial Outreach:**
+**Initial Outreach (Direct & Natural):**
 ```
-Hey [Agent Name],
+Hey [Name], 
 
-I'm Sarah from Mesa Maids. We specialize in move-in/move-out cleaning for real estate professionals in Mesa.
+We do move-out cleaning for realtors in Brooklyn. 
 
-We work with several agents who need reliable cleaning for their listings and new homeowners. Would you be interested in discussing a partnership?
+Would you be interested in a reliable cleaning partner for your closings? 
 
-We offer priority scheduling and special pricing for realtor referrals.
-```
+We offer realtor pricing and priority scheduling.
 
-**Follow-up 1 (no response):**
-```
-Hi [Agent Name],
-
-Following up on cleaning services for your listings. We've helped 50+ properties close faster with professional move-out cleaning.
-
-Want to chat about how we can help your clients?
+Let me know!
 ```
 
-**If interested:**
+**If They Respond:**
 ```
-Great! Here's what we offer for realtors:
+Realtor: "Yeah, what's your pricing?"
+Bot: "Move-outs start at $300-500 depending on size. Realtors get 10% off and priority scheduling."
 
-- 10% discount on all move-in/move-out cleans
-- Priority scheduling (24-48hr turnaround)
-- Direct billing to you or your clients
-- Before/after photos for listings
+Realtor: "What's included?"
+Bot: "Full empty-home clean including inside cabinets, windows, baseboards. We make it show-ready."
 
-How many properties do you typically close per month?
+Realtor: "How fast can you turn it around?"
+Bot: "Usually 24-48 hours. If you text me the address and closing date, I'll get it scheduled."
+
+Realtor: "Sounds good"
+Bot: "Awesome! Just text me whenever you have a property that needs cleaning and we'll handle it."
 ```
 
-**After partnership established:**
+**Follow-up 1 (no response after 3 days):**
 ```
-Hey [Agent Name]!
+Just following up from earlier this week. 
 
-Got a property that needs move-out cleaning? Just text me the address and move-out date and I'll get you on the schedule.
+Still interested in move-out cleaning for your listings? 
+
+Happy to send pricing.
+```
+
+**Follow-up 2 (no response after 1 week):**
+```
+Last follow-up, promise! 
+
+If you ever need move-out cleaning for a closing, we're here. 
+
+Reply anytime.
+```
+
+**After Partnership Established:**
+```
+Realtor: "Got a 3bd/2ba move-out at 123 Main St, closing Friday"
+Bot: "Got it! 3bd/2ba move-out is $360 with your realtor discount. I'll schedule for Thursday. Confirm?"
+
+Realtor: "Yes"
+Bot: "Scheduled! We'll text you when it's done with before/after pics."
 ```
 
 ### Partnership Benefits to Offer:
