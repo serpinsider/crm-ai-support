@@ -86,6 +86,9 @@ export const SERVICES = {
 };
 
 export const PRICING = {
+  // IMPORTANT: Pricing formula is BEDROOMS + BATHROOMS + SERVICE FEE + ADD-ONS
+  // Example: 2bd ($120) + 1ba ($80) = $200 base, Deep Clean = +$100 = $300 total
+  
   baseRates: {
     bedrooms: {
       'Studio': 70,
@@ -93,7 +96,8 @@ export const PRICING = {
       '2': 120,
       '3': 160,
       '4': 200,
-      '5': 240
+      '5': 240,
+      '6': 280
     },
     bathrooms: {
       '1': 80,
@@ -101,7 +105,9 @@ export const PRICING = {
       '2': 120,
       '2.5': 140,
       '3': 160,
-      '4': 200
+      '4': 200,
+      '5': 240,
+      '6': 280
     }
   },
   
