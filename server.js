@@ -343,7 +343,16 @@ Answer helpfully. If giving a price, include the booking link.`;
       ]
     });
     
-    const aiMessage = response.content[0].text;
+    let aiMessage = response.content[0].text;
+    
+    // Add line breaks between sentences if not present
+    // Replace ". " with ".\n\n" to add breathing room
+    if (!aiMessage.includes('\n')) {
+      aiMessage = aiMessage
+        .replace(/\. ([A-Z])/g, '.\n\n$1')  // Add breaks between sentences
+        .replace(/! ([A-Z])/g, '!\n\n$1')   // After exclamations
+        .replace(/\? ([A-Z])/g, '?\n\n$1'); // After questions
+    }
     
     // Log confidence (based on response structure)
     console.log(`🤖 AI Response generated (${response.usage.input_tokens} input tokens, ${response.usage.output_tokens} output tokens)`);
