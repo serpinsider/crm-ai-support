@@ -58,11 +58,16 @@ Booking: ${bookingUrl}
 ---
 
 IMPORTANT RULES:
-1. Read the previous messages - remember what property they asked about
-2. Only send booking link ONCE per conversation (usually with first price quote)
-3. Calculate prices exactly - don't make up numbers
-4. Keep responses short and natural
-5. Use line breaks between separate thoughts`;
+1. Read the conversation above - they already told you the property size, remember it
+2. Look at your previous responses - if you already sent the booking link, DON'T include it again
+3. Calculate prices exactly using the formula
+4. Keep it short and conversational
+5. When they ask follow-up questions, they're talking about the SAME property unless they say otherwise
+
+ABOUT THE BOOKING LINK:
+- Send it with the first price quote
+- After that, don't send it again unless they specifically ask how to book
+- If you already sent it in this conversation, just answer their question without the link`;
 
   return prompt;
 }

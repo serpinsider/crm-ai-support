@@ -136,42 +136,44 @@ async function sendSMS(toNumber, message, fromNumber = TEST_PHONE) {
   }
 }
 
-// Get conversation history from OpenPhone
+// Simple conversation memory (in-memory storage)
+// TODO: Replace with database for persistence across server restarts
+const conversationMemory = new Map();
+
+function storeMessage(conversationId, message) {
+  if (!conversationMemory.has(conversationId)) {
+    conversationMemory.set(conversationId, []);
+  }
+  const messages = conversationMemory.get(conversationId);
+  messages.push({
+    direction: message.direction,
+    body: message.body || message.content,
+    timestamp: message.createdAt || new Date().toISOString()
+  });
+  
+  // Keep last 20 messages only
+  if (messages.length > 20) {
+    messages.shift();
+  }
+}
+
+function getStoredMessages(conversationId) {
+  return conversationMemory.get(conversationId) || [];
+}
+
+// Get conversation history from OpenPhone (with fallback to memory)
 async function getConversationHistory(conversationId) {
+  // First try our local memory
+  const storedMessages = getStoredMessages(conversationId);
+  if (storedMessages.length > 0) {
+    console.log(`📋 Using stored conversation history: ${storedMessages.length} messages`);
+    return storedMessages;
+  }
+  
+  // If no memory, try OpenPhone API
   try {
-    // Try the conversations endpoint first
-    console.log(`🔍 Fetching from: /conversations/${conversationId}/messages`);
+    console.log(`🔍 Fetching from OpenPhone API...`);
     const response = await axios({
-      method: 'get',
-      url: `${OPENPHONE_API}/conversations/${conversationId}/messages`,
-      headers: {
-        'Authorization': OPENPHONE_API_KEY,
-        'Content-Type': 'application/json'
-      },
-      params: {
-        maxResults: 20
-      }
-    });
-    
-    console.log('✅ Conversation history response:', {
-      status: response.status,
-      hasData: !!response.data,
-      dataKeys: response.data ? Object.keys(response.data) : []
-    });
-    
-    if (response.data && response.data.data) {
-      const messages = response.data.data
-        .filter(msg => msg.direction === 'incoming' || msg.direction === 'outgoing')
-        .reverse(); // Oldest first
-      
-      console.log(`📋 Retrieved ${messages.length} messages`);
-      return messages;
-    }
-    
-    console.warn('No data in response, trying alternate endpoint...');
-    
-    // Try alternate endpoint
-    const altResponse = await axios({
       method: 'get',
       url: `${OPENPHONE_API}/messages`,
       headers: {
@@ -179,25 +181,24 @@ async function getConversationHistory(conversationId) {
         'Content-Type': 'application/json'
       },
       params: {
-        conversationId: conversationId,
-        maxResults: 20
+        phoneNumberId: 'PNh6cfCaXW', // Mesa Maids number ID
+        maxResults: 50
       }
     });
     
-    if (altResponse.data && altResponse.data.data) {
-      const messages = altResponse.data.data.reverse();
-      console.log(`📋 Retrieved ${messages.length} messages from alternate endpoint`);
-      return messages;
+    if (response.data && response.data.data) {
+      // Filter for this conversation
+      const conversationMessages = response.data.data
+        .filter(msg => msg.conversationId === conversationId)
+        .reverse();
+      
+      console.log(`📋 Retrieved ${conversationMessages.length} messages from OpenPhone`);
+      return conversationMessages;
     }
     
     return [];
   } catch (error) {
-    console.error('❌ Failed to fetch conversation history');
-    console.error('Error:', error.response?.data || error.message);
-    console.error('Conversation ID:', conversationId);
-    console.error('Endpoint tried:', `${OPENPHONE_API}/conversations/${conversationId}/messages`);
-    
-    // Return empty array so bot can still respond (just without context)
+    console.error('❌ OpenPhone API failed, using empty history');
     return [];
   }
 }
@@ -425,6 +426,13 @@ app.post('/webhook/incoming-message', async (req, res) => {
     console.log(`💬 Message: ${messageContent}`);
     console.log(`🔗 Conversation ID: ${conversationId}`);
     
+    // Store this incoming message in memory
+    storeMessage(conversationId, {
+      direction: 'incoming',
+      body: messageContent,
+      createdAt: messageData.createdAt
+    });
+    
     // Check if auto-response is enabled
     if (!ENABLE_AUTO_RESPONSE) {
       console.log('⚠️  Auto-response disabled, skipping');
@@ -479,6 +487,14 @@ app.post('/webhook/incoming-message', async (req, res) => {
     
     if (sendResult.success) {
       recordResponse(customerPhone);
+      
+      // Store our response in memory
+      storeMessage(conversationId, {
+        direction: 'outgoing',
+        body: aiResponse.message,
+        createdAt: new Date().toISOString()
+      });
+      
       console.log('✅ AI response sent successfully!');
     } else {
       console.log('❌ Failed to send AI response');
