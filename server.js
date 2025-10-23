@@ -183,6 +183,23 @@ function buildConversationContext(messages) {
   return context;
 }
 
+// Check if quote/link was already sent in conversation
+function wasQuoteSent(messages) {
+  if (!messages || messages.length === 0) return false;
+  
+  const ourMessages = messages.filter(m => m.direction === 'outgoing');
+  
+  for (const msg of ourMessages) {
+    const content = (msg.body || msg.content || '').toLowerCase();
+    // Check if message contains pricing ($XXX) or booking link
+    if (content.includes('mesamaids.com') || content.match(/\$\d+/)) {
+      return true;
+    }
+  }
+  
+  return false;
+}
+
 // Decision logic: Should we auto-respond?
 async function shouldAutoRespond(message, conversationHistory) {
   const messageContent = (message.body || message.content || '').toLowerCase();
@@ -242,32 +259,37 @@ async function generateAIResponse(message, conversationHistory) {
       conversationContext = buildConversationContext(conversationHistory);
     }
     
+    // Check if quote/link was already sent
+    const quoteSent = wasQuoteSent(conversationHistory);
+    
     // Build enhanced prompt with extracted context
     let promptContext = '';
     
     if (conversationContext) {
-      promptContext = `PREVIOUS CONVERSATION (THIS IS IMPORTANT - REMEMBER THE CONTEXT):
+      promptContext = `CONVERSATION SO FAR:
 ${conversationContext}
 
-EXTRACTED CONTEXT FROM CONVERSATION:
-- Property: ${propertyDetails.bedrooms || 'unknown'} bedrooms, ${propertyDetails.bathrooms || 'unknown'} bathrooms
-- Service Type: ${propertyDetails.serviceType}
+CONTEXT:
+- Property discussed: ${propertyDetails.bedrooms || 'not specified'} bed, ${propertyDetails.bathrooms || 'not specified'} bath
+- Service type: ${propertyDetails.serviceType}
 - Add-ons mentioned: ${propertyDetails.addons.length > 0 ? propertyDetails.addons.join(', ') : 'none'}
+- Quote already sent: ${quoteSent ? 'YES - you already sent pricing and/or booking link' : 'NO - this is first time discussing pricing'}
 
-CURRENT CUSTOMER MESSAGE:
+CUSTOMER'S NEW MESSAGE:
 ${messageContent}
 
-CRITICAL INSTRUCTIONS:
-1. This is a CONTINUATION of the conversation above
-2. The customer is asking about the SAME property (${propertyDetails.bedrooms}bd/${propertyDetails.bathrooms}ba) unless they explicitly say otherwise
-3. They already discussed ${propertyDetails.serviceType} - remember this
-4. If they ask "what if it was [different service]" - use the SAME property size they mentioned before
-5. If they ask to add/remove things - calculate based on what was already discussed
-6. Be specific with numbers and pricing
-
-Provide a helpful, concise response (1-3 sentences preferred).`;
+IMPORTANT:
+${quoteSent ? 
+  '- You ALREADY sent them a quote and booking link above\n- Just answer their question helpfully\n- DON\'T send the booking link again unless they ask\n- They\'re asking a follow-up about the SAME property' :
+  '- This is their first pricing question\n- Include the booking link after giving the price'
+}
+- If they ask "what about [different service]" - use the SAME property size from before
+- Answer based on the original quote you sent
+- Be short, friendly, and conversational (like the examples you were given)`;
     } else {
-      promptContext = `Customer: ${messageContent}\n\nProvide a helpful, concise response (1-3 sentences preferred).`;
+      promptContext = `Customer: ${messageContent}
+
+This is the first message. Answer helpfully and include booking link if giving a price.`;
     }
     
     const response = await anthropic.messages.create({
