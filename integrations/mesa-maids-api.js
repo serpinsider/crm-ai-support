@@ -83,8 +83,61 @@ export async function lookupCustomer(phone) {
   }
 }
 
+// Check if message is from the original quote bot
+function isOriginalQuoteBot(message) {
+  const content = message.body || message.content || '';
+  return content.includes('I just received your inquiry') || 
+         content.includes('Our base price for a');
+}
+
+// Extract property details from original quote bot message
+function parseFromOriginalQuote(message) {
+  const content = message.body || message.content || '';
+  
+  // Match patterns like "2 bed 1 bath" or "2bd 1ba"
+  const propertyMatch = content.match(/(\d+)\s*(?:bed|bedroom)\s*(\d+(?:\.\d+)?)\s*(?:bath|bathroom)/i);
+  
+  if (propertyMatch) {
+    return {
+      bedrooms: propertyMatch[1],
+      bathrooms: propertyMatch[2]
+    };
+  }
+  
+  return { bedrooms: null, bathrooms: null };
+}
+
 // Extract property details from customer message
 export function parsePropertyDetails(message, conversationHistory = []) {
+  // First check if there's a quote from the original bot in history
+  if (conversationHistory.length > 0) {
+    const originalQuote = conversationHistory.find(m => m.direction === 'outgoing' && isOriginalQuoteBot(m));
+    if (originalQuote) {
+      const { bedrooms, bathrooms } = parseFromOriginalQuote(originalQuote);
+      if (bedrooms && bathrooms) {
+        console.log('📋 Found property details from original quote bot:', { bedrooms, bathrooms });
+        // Use these as defaults, current message can override
+        const currentBedrooms = message.match(/(\d+)\s*(?:bed|bedroom|br|bd)/i)?.[1] || bedrooms;
+        const currentBathrooms = message.match(/(\d+(?:\.\d+)?)\s*(?:bath|bathroom|ba)/i)?.[1] || bathrooms;
+        
+        // Determine service type
+        let serviceType = 'Standard Clean';
+        const messageLower = message.toLowerCase();
+        if (messageLower.includes('deep')) serviceType = 'Deep Clean';
+        else if (messageLower.includes('super')) serviceType = 'Super Clean';
+        else if (messageLower.includes('move')) serviceType = 'Move In/Out';
+        
+        return {
+          bedrooms: currentBedrooms,
+          bathrooms: currentBathrooms,
+          serviceType,
+          addons: [],
+          hasPropertyDetails: true
+        };
+      }
+    }
+  }
+  
   // Extract bedrooms
   const bedroomMatch = message.match(/(\d+)\s*(?:bed|bedroom|br|bd)/i);
   let bedrooms = bedroomMatch ? bedroomMatch[1] : null;
